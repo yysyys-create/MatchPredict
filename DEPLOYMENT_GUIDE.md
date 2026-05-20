@@ -1,342 +1,278 @@
 # 📖 MatchPredict 完整部署指南
 
-这是 MatchPredict 足球比赛预测系统的完整部署指南。
+本指南提供 Vercel 部署、自定义域名配置和故障排除的完整步骤。
 
 ---
 
 ## 📚 目录
 
-- [环境要求](#环境要求)
-- [Vercel 部署](#vercel-部署)
-- [自定义域名](#自定义域名)
-- [环境变量配置](#环境变量配置)
-- [性能优化](#性能优化)
-- [故障排除](#故障排除)
+1. [前置要求](#前置要求)
+2. [Vercel 部署](#vercel-部署)
+3. [自定义域名配置](#自定义域名配置)
+4. [环境变量详解](#环境变量详解)
+5. [部署后配置](#部署后配置)
+6. [监控和维护](#监控和维护)
+7. [故障排除](#故障排除)
 
 ---
 
-## 环境要求
+## 前置要求
 
-### 必需条件
+### 必需
 
-- ✅ GitHub 账号
-- ✅ 互联网连接
-- ✅ 浏览器（Chrome、Safari、Firefox 等）
+- ✅ GitHub 账号（已有）
+- ✅ Vercel 账号（免费注册）
+- ✅ 浏览器（Chrome、Safari、Firefox）
+- ✅ 终端/命令行工具
 
-### 可选条件
+### 可选
 
-- 📧 Google 账号（用于 Gemini API）
-- 💳 信用卡（购买自定义域名）
-- 🗄️ PostgreSQL 数据库（用于数据存储）
+- Google 账号（用于 Gemini API）
+- 自定义域名（用于自定义网址）
+- PostgreSQL 数据库（用于数据存储）
 
 ---
 
 ## Vercel 部署
 
-### 什么是 Vercel？
+### 步骤 1：注册 Vercel
 
-Vercel 是一个云平台，可以：
-- 🚀 一键部署 Python/Node.js 应用
-- 🌍 全球 CDN 加速
-- 🔒 自动 HTTPS
-- 📊 实时监控和日志
-- 🆓 免费层足够个人使用
+1. 访问 https://vercel.com
+2. 点击 "Sign Up"
+3. 选择 "Continue with GitHub"
+4. 授权访问你的 GitHub 账户
+5. 完成注册
 
-### 部署步骤
+### 步骤 2：导入项目
 
-#### 1. 登录 Vercel
+1. 进入 Vercel 仪表板
+2. 点击 "Add New..." → "Project"
+3. 选择 "Import Git Repository"
+4. 输入：`https://github.com/yysyys-create/MatchPredict`
+5. 点击 "Import"
 
-访问 https://vercel.com
+### 步骤 3：配置项目
 
-- 点击 **"Sign Up"**
-- 选择 **"Continue with GitHub"**
-- 授权 Vercel 访问你的 GitHub 账号
+Vercel 会自动检测项目配置，你会看到：
 
-#### 2. 导入项目
-
-点击 **"Add New"** → **"Project"**
-
-- 选择 **"Import Git Repository"**
-- 搜索 `MatchPredict`
-- 点击你的 fork 项目：`yysyys-create/MatchPredict`
-- 点击 **"Import"**
-
-#### 3. 配置项目
-
-在项目配置页面：
-
-**项目名称：**
 ```
-matchpredict （或任何你想要的名称）
+Framework Preset: Other
+Root Directory: ./
+Build Command: [自动检测]
+Output Directory: [自动检测]
 ```
 
-**根目录：**
-```
-./ （默认，不需要修改）
-```
+**保持默认设置即可。**
 
-**框架预设：**
-```
-Python （应自动检测）
-```
+### 步骤 4：设置环境变量
 
-#### 4. 配置环境变量
+在 "Environment Variables" 部分添加：
 
-点击 **"Environment Variables"** 部分，添加以下变量：
+#### 必需变量
 
-**必需：**
-```
-SECRET_KEY = [你生成的密钥]
-```
+| 变量名 | 值 | 说明 |
+|--------|----|---------|
+| `SECRET_KEY` | [生成的密钥] | Flask 会话密钥 |
 
-**可选：**
-```
-GEMINI_API_KEY = [你的 API 密钥]
-GEMINI_MODEL = gemini-2.0-flash-exp
-DATABASE_URL = [你的数据库连接字符串]
-```
+#### 可选变量
 
-#### 5. 部署
+| 变量名 | 值 | 说明 |
+|--------|----|---------|
+| `GEMINI_API_KEY` | [你的 API 密钥] | Google Gemini AI |
+| `GEMINI_MODEL` | `gemini-2.0-flash-exp` | 使用的模型 |
+| `DATABASE_URL` | [PostgreSQL 连接] | 数据库连接 |
+| `SESSION_COOKIE_SAMESITE` | `None` | Cookie 配置 |
 
-点击 **"Deploy"** 按钮。
+### 步骤 5：部署
 
-Vercel 会：
-1. 安装依赖（requirements.txt）
-2. 构建应用
-3. 部署到服务器
-4. 生成 URL
-
-部署通常需要 2-3 分钟。
-
-#### 6. 获取 URL
-
-部署完成后，你会看到：
-```
-https://matchpredict-xxxxx.vercel.app
-```
-
-这就是你的网站地址！
+1. 点击 "Deploy" 按钮
+2. 等待 2-3 分钟
+3. 看到 ✅ 绿色对勾
+4. 获得你的 URL：`https://matchpredict-xxxxx.vercel.app`
 
 ---
 
-## 自定义域名
+## 自定义域名配置
 
-### 为什么需要自定义域名？
+### 步骤 1：购买域名
 
-- 🎯 更专业的外观
-- 🔍 更容易记住
-- 📧 可以创建品牌邮箱
-- 📊 更容易统计用户数据
-
-### 购买域名
-
-#### 选择域名注册商
+选择一个域名注册商：
 
 | 服务商 | 网址 | 特点 |
 |--------|------|------|
-| Namecheap | https://www.namecheap.com | 便宜，支持中文 |
-| GoDaddy | https://www.godaddy.com | 知名，功能全 |
-| 阿里云 | https://wanwang.aliyun.com | 国内，支持中文 |
-| Google Domains | https://domains.google | 简单易用 |
+| **Namecheap** | https://www.namecheap.com | 便宜、可靠 |
+| **GoDaddy** | https://www.godaddy.com | 功能全面 |
+| **阿里云** | https://wanwang.aliyun.com | 国内服务 |
+| **Cloudflare** | https://www.cloudflare.com | 免费域名注册 |
 
-#### 搜索和购买
-
-1. 打开注册商网站
-2. 搜索你想要的域名
-   - 示例：`football-predict.com`
-   - 示例：`aifootball.cn`
-   - 示例：`matchpredict.co`
-3. 选择 1 年或多年的套餐
-4. 完成支付
-
-### 配置在 Vercel 中
-
-#### 步骤 1：添加域名
+### 步骤 2：在 Vercel 添加域名
 
 1. 进入 Vercel 项目
-2. 点击 **"Settings"** 标签
-3. 选择 **"Domains"**
-4. 点击 **"Add Domain"**
-5. 输入你的域名
-6. 点击 **"Add"**
+2. 点击 "Settings" → "Domains"
+3. 点击 "Add" 按钮
+4. 输入你的域名（例如：matchpredict.com）
+5. 点击 "Add"
 
-#### 步骤 2：配置 DNS
+Vercel 会提示两种配置方式。
 
-Vercel 会显示 DNS 配置选项。有两种方式：
+### 步骤 3：配置 DNS（选择一种方式）
 
-##### 方式 A：使用 Vercel Nameservers（推荐）
+#### 方式 A：使用 Vercel Nameservers（推荐）
 
-1. 复制 Vercel 提供的 4 个 Nameservers
-2. 登录你的域名注册商
-3. 进入 DNS 设置
-4. 将 Nameservers 改为 Vercel 提供的
-5. 等待 DNS 生效（通常 1-24 小时）
+1. Vercel 会提供 4 个 Nameservers
+2. 复制这些 Nameservers
+3. 登录你的域名注册商后台
+4. 找到 "Nameservers" 或 "DNS" 设置
+5. 将你的域名的 DNS 指向这 4 个 Nameservers
+6. 等待 DNS 生效（通常 1-24 小时）
 
-**示例 Vercel Nameservers：**
+**示例：**
 ```
-ns1.vercel-dns.com
-ns2.vercel-dns.com
+Nameserver 1: ns1.vercel.com
+Nameserver 2: ns2.vercel.com
+Nameserver 3: ns3.vercel.com
+Nameserver 4: ns4.vercel.com
 ```
 
-##### 方式 B：手动 CNAME 记录
+#### 方式 B：手动 CNAME 配置
 
 如果你的域名已有其他 DNS 记录：
 
-1. 不改变 Nameservers
-2. 添加 CNAME 记录指向 Vercel
-3. Vercel 会显示具体的 CNAME 值
+1. Vercel 会提示 CNAME 记录
+2. 登录你的域名注册商后台
+3. 进入 DNS/CNAME 设置
+4. 添加 CNAME 记录：
+   ```
+   主机: www
+   值: cname.vercel-dns.com
+   ```
+5. 等待 DNS 生效
 
-**示例 CNAME 记录：**
-```
-Host: www
-Type: CNAME
-Value: cname.vercel-dns.com
-TTL: 3600
-```
+### 步骤 4：验证域名
 
-#### 步骤 3：验证 DNS
+1. DNS 生效后（通常 1-24 小时），Vercel 会自动验证
+2. 状态从 "Pending" 变为 "Valid"
+3. HTTPS 证书会自动生成
 
-- DNS 生效后，Vercel 会自动验证
-- 通常需要 5-30 分钟
-- 检查 Vercel Domains 页面上的状态
+### 步骤 5：访问你的域名
 
-#### 步骤 4：HTTPS 证书
+现在你可以通过自定义域名访问你的网站：
 
-- Vercel 自动为你的域名配置 HTTPS
-- 通常需要几分钟
-- 看到 ✅ "Valid Certificate" 时完成
-
-### 访问你的网站
-
-DNS 生效后，你可以访问：
 ```
 https://你的域名.com
 ```
 
 ---
 
-## 环境变量配置
+## 环境变量详解
 
-### 什么是环境变量？
+### SECRET_KEY
 
-环境变量是应用程序在运行时使用的配置参数。
+**用途：** Flask 会话加密密钥
 
-### 常用变量
-
-#### SECRET_KEY（必需）
-
-用途：Flask 会话加密
-
-生成方式：
+**生成方法：**
 ```bash
+# 方法 1：Python
 python3 -c "import secrets; print(secrets.token_hex(32))"
+
+# 方法 2：OpenSSL
+openssl rand -hex 32
+
+# 方法 3：Online 生成器
+# https://randomkeygen.com/
 ```
 
-示例：
+**示例：**
 ```
-a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6
+abc123def456ghi789jkl012mno345pqr678stu901vwx234yz
 ```
 
-#### GEMINI_API_KEY（可选）
+### GEMINI_API_KEY
 
-用途：Google Gemini AI 功能
+**用途：** Google Gemini AI 预测功能
 
-获取方式：
+**获取方法：**
 1. 访问 https://ai.google.dev
-2. 点击 **"Get API Key"**
-3. 选择或创建项目
-4. 点击 **"Create API Key"**
-5. 复制生成的密钥
+2. 点击 "Get API Key"
+3. 创建新项目
+4. 复制 API 密钥
+5. 在 Vercel 中配置
 
-示例：
+**格式：**
 ```
-AIzaSyD_xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-```
-
-#### GEMINI_MODEL（可选）
-
-用途：指定 Gemini 模型版本
-
-示例值：
-```
-gemini-2.0-flash-exp
-gemini-2.5-flash-lite-preview-06-17
-gemini-pro
+sk-proj-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
-#### DATABASE_URL（可选）
+### DATABASE_URL
 
-用途：PostgreSQL 数据库连接
+**用途：** PostgreSQL 数据库连接（可选）
 
-格式：
+**格式：**
 ```
-postgresql://user:password@host:port/database
-```
-
-示例：
-```
-postgresql://postgres:mypassword@db.example.com:5432/matchpredict
+postgresql://username:password@hostname:5432/database_name
 ```
 
-### 在 Vercel 中设置
-
-1. 进入项目 → **"Settings"** → **"Environment Variables"**
-2. 输入变量名
-3. 输入变量值
-4. 点击 **"Add"**
-5. 重新部署（可选）
-
-### 更新环境变量后
-
-- 新变量对新部署立即生效
-- 如果需要立即应用，点击 **"Redeploy"**
+**示例：**
+```
+postgresql://user:mypassword@db.example.com:5432/matchpredict
+```
 
 ---
 
-## 性能优化
+## 部署后配置
 
-### 部署后的优化建议
+### 配置 AI 功能
 
-#### 1. 启用缓存
+1. 在 Vercel 项目 Settings → Environment Variables
+2. 添加 `GEMINI_API_KEY`
+3. 添加 `GEMINI_MODEL`（值为 `gemini-2.0-flash-exp`）
+4. 点击 "Redeploy"
 
-在 `vercel.json` 中配置缓存：
+### 配置数据库
 
-```json
-{
-  "headers": [
-    {
-      "source": "/static/:path*",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    }
-  ]
-}
-```
+1. 创建或获得 PostgreSQL 数据库
+2. 在 Vercel 中添加 `DATABASE_URL`
+3. 运行初始化脚本
+4. 点击 "Redeploy"
 
-#### 2. 启用 Gzip 压缩
+### 配置自动部署
 
-Vercel 自动启用，无需配置。
+Vercel 默认会自动检测 GitHub 更新：
 
-#### 3. 监控性能
+1. 在 GitHub 修改代码
+2. 提交到 main 分支
+3. Vercel 自动检测并部署（1-3 分钟）
+4. 部署完成后刷新网站
 
-在 Vercel 仪表板上：
-- 查看函数执行时间
-- 查看数据库查询时间
-- 查看 API 响应时间
+---
 
-#### 4. 优化数据库查询
+## 监控和维护
 
-- 添加索引到常用字段
-- 使用分页获取大数据集
-- 缓存频繁查询结果
+### 查看部署历史
 
-#### 5. CDN 配置
+1. 进入 Vercel 项目
+2. 点击 "Deployments" 标签
+3. 查看所有部署记录
+4. 可以回滚到之前的版本
 
-Vercel 使用全球 CDN，自动为所有用户加速。
+### 查看日志
+
+1. 进入 "Deployments"
+2. 点击一个部署
+3. 查看 "Logs" 标签
+
+### 性能监控
+
+1. 进入 "Analytics" 标签
+2. 查看访问量、响应时间等
+
+### 自动回滚
+
+如果部署失败：
+
+1. 进入 "Deployments"
+2. 点击之前成功的版本
+3. 点击 "Redeploy"
 
 ---
 
@@ -344,171 +280,86 @@ Vercel 使用全球 CDN，自动为所有用户加速。
 
 ### 部署失败
 
-#### 错误：Build failed
+**症状：** 看到红色的 ❌ 标记
 
-**原因：** 代码有错误或依赖不兼容
+**解决方案：**
 
-**解决：**
-1. 检查 Vercel 构建日志
-2. 查看具体的错误信息
-3. 修复代码错误
-4. 提交到 GitHub
-5. Vercel 会自动重新部署
+1. 点击部署查看详细错误
+2. 常见原因：
+   - 环境变量配置错误
+   - requirements.txt 有问题
+   - Python 版本不兼容
 
-#### 错误：Function payload too large
+3. 修复问题后提交到 GitHub
+4. Vercel 会自动重新部署
 
-**原因：** 部署包太大（超过 50MB）
+### 网站打不开
 
-**解决：**
-1. 删除不必要的文件
-2. 更新 `.gitignore`
-3. 清理缓存文件
-4. 重新部署
+**症状：** 访问 URL 显示 404 或 502 错误
 
-### 网站访问问题
+**解决方案：**
 
-#### 问题：404 Not Found
+1. 检查部署状态（绿色对勾 = 成功）
+2. 等待 5 分钟（可能仍在部署）
+3. 硬刷新浏览器：
+   - Windows: Ctrl+Shift+R
+   - Mac: Cmd+Shift+R
+4. 清空浏览器缓存
+5. 在隐私浏览模式测试
 
-**原因：** 路由不存在
+### 环境变量未生效
 
-**解决：**
-1. 检查 URL 是否正确
-2. 检查 Flask 路由定义
-3. 查看 Vercel 日志
+**症状：** 设置了环境变量但不工作
 
-#### 问题：502 Bad Gateway
+**解决方案：**
 
-**原因：** 服务器出错
+1. 确保正确添加了环境变量
+2. 点击 "Redeploy" 重新部署
+3. 等待部署完成
+4. 刷新网站
 
-**解决：**
-1. 检查应用日志
-2. 重新部署
-3. 检查环境变量配置
-4. 检查数据库连接
+### 数据库连接失败
 
-#### 问题：HTTPS 证书错误
+**症状：** 看到数据库错误信息
 
-**原因：** 域名 DNS 未正确配置
+**解决方案：**
 
-**解决：**
-1. 检查 DNS 记录
-2. 等待 DNS 生效
-3. 清除浏览器缓存
-4. 尝试无痕模式
+1. 检查 `DATABASE_URL` 是否正确
+2. 确保数据库服务运行
+3. 检查防火墙/网络设置
+4. 确认数据库凭证正确
 
-### 功能问题
+### AI 功能不工作
 
-#### 问题：AI 预测不工作
+**症状：** AI 预测返回错误
 
-**原因：** 缺少 GEMINI_API_KEY
+**解决方案：**
 
-**解决：**
-1. 获取 Google Gemini API 密钥
-2. 在 Vercel 添加 GEMINI_API_KEY
-3. 重新部署
-4. 测试 AI 功能
+1. 检查 `GEMINI_API_KEY` 是否设置
+2. 验证 API 密钥是否有效
+3. 检查 API 配额是否用尽
+4. 确保 `GEMINI_MODEL` 设置正确
 
-#### 问题：数据库连接失败
+### 域名无法访问
 
-**原因：** DATABASE_URL 不正确或数据库宕机
+**症状：** 自定义域名无法连接
 
-**解决：**
-1. 检查 DATABASE_URL 格式
-2. 检查数据库是否在线
-3. 检查网络连接
-4. 查看详细错误信息
+**解决方案：**
 
-#### 问题：会话/登录不工作
-
-**原因：** Cookie 配置问题
-
-**解决：**
-1. 检查 SESSION_COOKIE_SAMESITE 设置
-2. 确保 HTTPS 可用
-3. 清除浏览器 Cookie
-4. 尝试不同的浏览器
-
-### 性能问题
-
-#### 问题：网站响应慢
-
-**原因：** 请求处理时间过长
-
-**解决：**
-1. 检查 Vercel 函数执行时间
-2. 优化数据库查询
-3. 添加缓存
-4. 检查第三方 API 响应时间
-
-#### 问题：数据库查询慢
-
-**原因：** 缺少索引或表太大
-
-**解决：**
-1. 分析查询时间
-2. 添加适当的索引
-3. 使用查询优化
-4. 考虑数据库升级
+1. 检查 DNS 配置是否正确
+2. 等待 DNS 生效（通常 1-24 小时）
+3. 使用 DNS 检查工具验证：https://mxtoolbox.com/
+4. 确保 Vercel 中的域名状态为 "Valid"
+5. 检查 HTTPS 证书是否生成
 
 ---
 
-## 监控和维护
+## 📞 获取帮助
 
-### 定期检查
-
-- [ ] 每周检查 Vercel 日志
-- [ ] 每月检查性能指标
-- [ ] 定期更新依赖
-- [ ] 备份数据库数据
-
-### 日志查看
-
-在 Vercel 仪表板：
-1. 进入项目
-2. 点击 **"Deployments"**
-3. 选择一个部署
-4. 查看 **"Logs"** 标签
-
-### 错误追踪
-
-可以集成 Sentry 或其他服务进行错误追踪。
-
----
-
-## 常见问题
-
-### Q: Vercel 部署是否免费？
-
-**A:** 是的，免费层包括：
-- 每月 100GB 流量
-- 无限制函数执行
-- 自动扩展
-- 足够大多数个人项目使用
-
-### Q: 域名续费时间？
-
-**A:** 通常是每年续费一次，具体取决于你购买的时长。
-
-### Q: 如何备份数据？
-
-**A:**
-1. 如果使用 PostgreSQL，定期导出数据库
-2. 使用 GitHub 备份代码
-3. 记录重要配置
-
-### Q: 能否迁移到其他平台？
-
-**A:** 可以，Vercel 不会锁定你的数据。
-
----
-
-## 获取帮助
-
-- 📖 [快速开始指南](./QUICK_START.md)
-- ✅ [部署检查清单](./DEPLOYMENT_CHECKLIST.md)
-- 🔗 [Vercel 文档](https://vercel.com/docs)
-- 🐛 [项目 Issues](https://github.com/Scodive/MatchPredict/issues)
-- 💬 [GitHub Discussions](https://github.com/Scodive/MatchPredict/discussions)
+- 📖 官方文档：https://vercel.com/docs
+- 🐛 GitHub Issues：https://github.com/Scodive/MatchPredict/issues
+- 💬 Vercel 支持：https://vercel.com/support
+- 🌐 社区论坛：https://github.com/Scodive/MatchPredict/discussions
 
 ---
 
