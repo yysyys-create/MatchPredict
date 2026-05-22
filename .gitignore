@@ -1,1 +1,7 @@
 config.py
+.env.local
+.env
+*.pyc
+__pycache__/
+*.pyc
+

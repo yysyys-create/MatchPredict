@@ -17,13 +17,13 @@ except ImportError as e:
 
 # 延迟导入，避免在Vercel环境中的问题
 try:
-    from lottery_api import ChinaSportsLotterySpider
+    from scripts.lottery_api import ChinaSportsLotterySpider
 except ImportError as e:
     print(f"导入彩票API失败: {e}")
     ChinaSportsLotterySpider = None
 
 try:
-    from ai_predictor import AIFootballPredictor
+    from scripts.ai_predictor import AIFootballPredictor
 except ImportError as e:
     print(f"导入AI预测器失败: {e}")
     AIFootballPredictor = None
