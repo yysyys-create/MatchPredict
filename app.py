@@ -7,6 +7,14 @@ import hashlib
 import psycopg2
 from datetime import datetime, timedelta
 
+# 加载环境变量
+try:
+    from dotenv import load_dotenv
+    load_dotenv('.env.local')
+    print("✅ 成功加载.env.local环境变量")
+except ImportError:
+    print("⚠️ python-dotenv未安装，跳过环境变量加载")
+
 # 尝试导入数据库模块
 try:
     from scripts.database import prediction_db
@@ -29,18 +37,13 @@ except ImportError as e:
     AIFootballPredictor = None
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key-change-in-production') # 在生产环境中务必设置一个强随机 SECRET_KEY
-# Session/Cookie 配置，确保登录态可用
+app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key-change-in-production')
+
+# Session/Cookie 配置
 app.config.update(
     SESSION_COOKIE_NAME='mp_session',
-    # 'None' 是为了支持跨站点请求（例如前端与后端域名不同），但要求 Secure=True (HTTPS)
-    # 如果前端和后端在同一个主域的不同子域（例如 app.example.com 和 api.example.com），
-    # 并且 SESSION_COOKIE_DOMAIN 设置为 '.example.com'，则 Cookie 会在子域间共享。
-    SESSION_COOKIE_SAMESITE=os.environ.get('SESSION_COOKIE_SAMESITE', 'None'),
-    SESSION_COOKIE_SECURE=True, # 必须为 True，因为 SameSite=None
-    # 可选：通过环境变量设置 Cookie 域名（例如 .match-predict.vercel.app，注意开头的点）
-    # 如果不设置，则默认为当前请求的域名。在跨子域共享时才需要设置。
-    SESSION_COOKIE_DOMAIN=os.environ.get('SESSION_COOKIE_DOMAIN'),
+    SESSION_COOKIE_SAMESITE=os.environ.get('SESSION_COOKIE_SAMESITE', 'Lax'),
+    SESSION_COOKIE_SECURE=os.environ.get('SESSION_COOKIE_SECURE', 'false').lower() == 'true',
     PERMANENT_SESSION_LIFETIME=timedelta(days=7)
 )
 

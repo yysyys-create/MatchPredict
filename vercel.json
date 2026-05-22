@@ -2,7 +2,10 @@
   "builds": [
     {
       "src": "app.py",
-      "use": "@vercel/python"
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "50mb"
+      }
     }
   ],
   "routes": [
@@ -13,6 +16,14 @@
   ],
   "env": {
     "FLASK_APP": "app.py",
-    "FLASK_DEBUG": "false"
+    "FLASK_ENV": "production",
+    "FLASK_DEBUG": "false",
+    "SESSION_COOKIE_SECURE": "true",
+    "SESSION_COOKIE_SAMESITE": "Lax"
+  },
+  "functions": {
+    "app.py": {
+      "maxDuration": 30
+    }
   }
 }
